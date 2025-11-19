@@ -1,6 +1,5 @@
-package com.example.cinemiron.ui.theme
+package com.example.pruebas_apis.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -10,34 +9,39 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.example.cinemiron.ui.theme.*
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = AccentLight,
+    secondary = Accent,
+    tertiary = PrimaryLight,
+    background = PrimaryDark,
+    surface = Primary,
+    onPrimary = PrimaryDark,
+    onSecondary = PrimaryDark,
+    onTertiary = PrimaryDark,
+    onBackground = AccentLight,
+    onSurface = AccentLight,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = Primary,
+    secondary = PrimaryDark,
+    tertiary = PrimaryLight,
+    background = AccentLight,
+    surface = Accent,
+    onPrimary = AccentLight,
+    onSecondary = AccentLight,
+    onTertiary = PrimaryDark,
+    onBackground = PrimaryDark,
+    onSurface = PrimaryDark
 )
 
 @Composable
 fun CineMironTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
