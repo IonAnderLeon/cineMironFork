@@ -68,10 +68,12 @@ fun FilmInfo(navController: NavController, modifier: Modifier){
     }
 }
 
-var descripcion : String = "alñjsdklñfjsdklñjflñsjñkldfjklñsjdfklñjasklñfjklñasjdklñfjasklñdjf" +
-        "ajsdklajsdklasjdkakjsdklaskjdklaskldjklajsjdkajsjkdkaksjdklajsjkd" +
-        "kahdjkajksdajksdjajkdjkadasjkdajkshdasdadasdasdajfaskldjfasdfasdfasdf" +
-        "asldhsjkfhjklashfjasjklhdfjklashdjklfjlashdfjklhasjklfhjklasdhfjklashdfklj"
+var descripcion : String = " Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque orci" +
+        "turpis, blandit sit amet ultrices sed, vestibulum ut tortor. Praesent hendrerit," +
+        "eros id placerat aliquam, augue quam cursus justo, in fermentum ligula mi in erat." +
+        "Pellentesque eu tincidunt lorem, ut semper justo. Fusce sed dictum ligula. Suspendisse" +
+        "fermentum euismod nisl nec imperdiet. Integer rutrum odio congue nisi congue dapibus." +
+        "Etiam urna erat, rhoncus vel viverra in, porta vel neque."
 
 @Composable
 fun TopFilmColumn(){

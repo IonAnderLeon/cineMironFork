@@ -1,6 +1,7 @@
 package com.example.cinemiron.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,8 +20,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,21 +32,21 @@ import com.example.cinemiron.R
 
 @Composable
 fun HomeScreen(navController: NavController, modifier: Modifier = Modifier) {
-    HomeAppBar(modifier)
+    HomeAppBar(modifier, navController)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeAppBar(modifier: Modifier = Modifier) {
+fun HomeAppBar(modifier: Modifier = Modifier, navController: NavController) {
     Scaffold(
         modifier = modifier
     ) { innerPadding ->
-        ScrollContent(innerPadding)
+        ScrollContent(innerPadding, navController)
     }
 }
 
 @Composable
-fun ScrollContent(innerPadding: PaddingValues) {
+fun ScrollContent(innerPadding: PaddingValues, navController: NavController) {
     val scrollState = rememberScrollState()
     val images = listOf(
         R.drawable.fatum,
@@ -70,26 +69,26 @@ fun ScrollContent(innerPadding: PaddingValues) {
             style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.height(16.dp))
-        ImageRow(images)
+        ImageRow(images, navController)
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = "Recomendaciones para ti",
             style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.height(16.dp))
-        ImageRow(images)
+        ImageRow(images, navController)
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = "En Cartelera",
             style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.height(16.dp))
-        ImageRow(images)
+        ImageRow(images, navController)
     }
 }
 
 @Composable
-fun ImageRow(images: List<Int>) {
+fun ImageRow(images: List<Int>, navController: NavController) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
@@ -102,7 +101,8 @@ fun ImageRow(images: List<Int>) {
                 contentDescription = null,
                 modifier = Modifier
                     .size(width = 110.dp, height = 150.dp)
-                    .clip(RoundedCornerShape(12.dp)),
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(onClick = {navController.navigate("filminfo")}),
                 contentScale = ContentScale.Crop
             )
         }

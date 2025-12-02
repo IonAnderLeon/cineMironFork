@@ -42,7 +42,7 @@ import androidx.navigation.NavController
 import com.example.cinemiron.R
 
 @Composable
-fun Profile(navController: NavController, modifier: Modifier) {
+fun ProfileScreen(navController: NavController, modifier: Modifier) {
     val scrollState = rememberScrollState()
     Column(Modifier.padding(20.dp)
         .verticalScroll(scrollState)) {

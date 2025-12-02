@@ -29,8 +29,10 @@ import com.example.cinemiron.components.BottomNavBar
 import com.example.cinemiron.screens.FilmInfo
 import com.example.cinemiron.screens.HomeScreen
 import com.example.cinemiron.screens.LoginScreen
-import com.example.cinemiron.screens.Profile
+import com.example.cinemiron.screens.ProfileScreen
 import com.example.cinemiron.screens.RegisterScreen
+import com.example.cinemiron.screens.ReviewScreen
+import com.example.cinemiron.screens.SearchScreen
 import com.example.pruebas_apis.ui.theme.CineMironTheme
 
 
@@ -112,13 +114,13 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("search") {
-                            Profile(
+                            SearchScreen(
                                 navController,
                                 modifier = Modifier.padding(innerPadding)
                             )
                         }
                         composable("popular") {
-                            Profile(
+                            ProfileScreen(
                                 navController,
                                 modifier = Modifier.padding(innerPadding)
                             )
@@ -130,13 +132,13 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("review") {
-                            Profile(
+                            ReviewScreen(
                                 navController,
                                 modifier = Modifier.padding(innerPadding)
                             )
                         }
                         composable("profile") {
-                            Profile(
+                            ProfileScreen(
                                 navController,
                                 modifier = Modifier.padding(innerPadding)
                             )
