@@ -28,7 +28,7 @@ fun BottomNavBar(
     ) {
         val navItems = listOf(
             NavItem("home", "Inicio", Icons.Default.Home),
-            NavItem("search", "Buscar", Icons.Default.Search),
+            NavItem("filminfo", "Buscar", Icons.Default.Search),
             NavItem("review", "Reseñas", Icons.Default.Edit),
             NavItem("profile", "Perfil", Icons.Default.Person)
         )
