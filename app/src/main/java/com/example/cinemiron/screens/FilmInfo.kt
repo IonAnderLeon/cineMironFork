@@ -3,6 +3,7 @@ package com.example.cinemiron.screens
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -27,6 +29,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +53,7 @@ import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
 fun FilmInfoScreen(){
@@ -59,13 +66,23 @@ fun FilmInfoScreen(){
         }
     }
 }
+var descripcion : String = "alñjsdklñfjsdklñjflñsjñkldfjklñsjdfklñjasklñfjklñasjdklñfjasklñdjf" +
+                            "ajsdklajsdklasjdkakjsdklaskjdklaskldjklajsjdkajsjkdkaksjdklajsjkd" +
+                            "kahdjkajksdajksdjajkdjkadasjkdajkshdasdadasdasdajfaskldjfasdfasdfasdf" +
+                            "asldhsjkfhjklashfjasjklhdfjklashdjklfjlashdfjklhasjklfhjklasdhfjklashdfklj"
 
 @Composable
 fun TopFilmColumn(){
-    LazyColumn(Modifier.fillMaxWidth()) {
+
+    val scrollState = rememberLazyListState()
+
+    LazyColumn(
+        state = scrollState,
+        modifier = Modifier.fillMaxWidth()
+    ) {
         item{
             TopFilmInfo()
-            DescriptionRow()
+            DescriptionRow(descripcion)
             RatingRow()
         }
     }
@@ -135,12 +152,37 @@ fun TrailerButton() {
 }
 
 @Composable
-fun DescriptionRow(){
-    Row(Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 22.dp, vertical = 2.dp)
+fun DescriptionRow(description: String) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(
+        Modifier.padding(horizontal = 22.dp, vertical = 2.dp),
     ) {
-        DescriptionText()
+        Text(
+            text = description,
+            maxLines = if (expanded) Int.MAX_VALUE else 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.clickable { expanded = !expanded }
+        )
+        if (!expanded) {
+            Text(
+                "Ver más...",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .clickable { expanded = !expanded }
+            )
+        } else{
+            Text(
+                "Mostrar menos.",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .clickable { expanded = !expanded }
+            )
+        }
     }
 }
 
