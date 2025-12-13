@@ -2,7 +2,7 @@ package com.example.cinemiron.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Esquema Verde (por defecto)
+// Esquema Verde
 val PrimaryDark = Color(0xFF304347)
 val Primary = Color(0xFF506F6A)
 val PrimaryLight = Color(0xFF7B9A92)

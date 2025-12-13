@@ -4,13 +4,14 @@ import com.example.cinemiron.R
 
 object PelisRepository {
 
-    fun getContactInfo(): List<Pelis> = listOf(Pelis(
-        id = 1,
-        name = "La bella y la bestia",
-        photo = R.drawable.bellabestia,
-        contentDescription = null,
-        sinopsis = "Una joven e inteligente mujer llamada Bella acepta vivir con una bestia aterradora en su castillo encantado para salvar a su padre. A medida que conviven, descubre que bajo su apariencia monstruosa se esconde un príncipe atrapado por un hechizo que solo el amor verdadero puede romper."
-    ),
+    fun getContactInfo(): List<Pelis> = listOf(
+        Pelis(
+            id = 1,
+            name = "La bella y la bestia",
+            photo = R.drawable.bellabestia,
+            contentDescription = null,
+            sinopsis = "Una joven e inteligente mujer llamada Bella acepta vivir con una bestia aterradora en su castillo encantado para salvar a su padre. A medida que conviven, descubre que bajo su apariencia monstruosa se esconde un príncipe atrapado por un hechizo que solo el amor verdadero puede romper."
+        ),
         Pelis(
             id = 2,
             name = "Fattum",

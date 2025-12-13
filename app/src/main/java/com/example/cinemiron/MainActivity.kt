@@ -154,7 +154,8 @@ class MainActivity : ComponentActivity() {
                         composable("popular") {
                             ProfileScreen(
                                 navController,
-                                modifier = Modifier.padding(innerPadding)
+                                modifier = Modifier.padding(innerPadding),
+                                auth = auth
                             )
                         }
                         composable("filminfo") {
@@ -172,7 +173,8 @@ class MainActivity : ComponentActivity() {
                         composable("profile") {
                             ProfileScreen(
                                 navController,
-                                modifier = Modifier.padding(innerPadding)
+                                modifier = Modifier.padding(innerPadding),
+                                auth = auth
                             )
                         }
                     }

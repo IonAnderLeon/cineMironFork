@@ -43,6 +43,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
+import com.example.cinemiron.data.saveUserProfileToFirestore as saveUserProfileToFirestoreNew
 import kotlinx.coroutines.launch
 
 private const val TAG = "RegisterScreen"
@@ -207,7 +208,7 @@ fun RegisterScreen(navController: NavController,
                                     if (user != null) {
                                         Log.d(TAG, "Usuario creado en Firebase Auth: ${user.uid}, email: ${user.email}")
 
-                                        saveUserProfileToFirestore(
+                                        saveUserProfileToFirestoreNew(
                                             userId = user.uid,
                                             email = email.trim(),
                                             username = username.trim(),
@@ -286,9 +287,9 @@ fun verifyUsernameAvailable(
     }
     
     Log.d(TAG, "Verificando disponibilidad del username: '$trimmedUsername'")
-    
+
     Firebase.firestore.collection("users")
-        .whereEqualTo("username", trimmedUsername)
+        .whereEqualTo("basicInfo.username", trimmedUsername)
         .limit(1)
         .get()
         .addOnSuccessListener { querySnapshot ->
@@ -317,83 +318,7 @@ fun verifyUsernameAvailable(
                 Log.w(TAG, "Error de red, permitiendo continuar. Se verificará al guardar.")
                 onResult(true)
             } else {
-                // Para otros errores, asumimos que no está disponible
                 onResult(false)
-            }
-        }
-}
-
-fun saveUserProfileToFirestore(
-    userId: String,
-    email: String,
-    username: String,
-    onSuccess: () -> Unit = {},
-    onError: (Exception) -> Unit = {}
-) {
-    val trimmedUsername = username.trim()
-    val trimmedEmail = email.trim()
-    
-    if (userId.isEmpty()) {
-        onError(Exception("ID de usuario inválido"))
-        return
-    }
-
-    if (trimmedUsername.isBlank()) {
-        onError(Exception("El nombre de usuario es requerido"))
-        return
-    }
-
-    Log.d(TAG, "Intentando guardar perfil en Firestore:")
-    Log.d(TAG, "  - UserId: $userId")
-    Log.d(TAG, "  - Email: $trimmedEmail")
-    Log.d(TAG, "  - Username: $trimmedUsername")
-
-    Firebase.firestore.collection("users")
-        .whereEqualTo("username", trimmedUsername)
-        .get()
-        .addOnSuccessListener { querySnapshot ->
-            if (!querySnapshot.isEmpty) {
-                val existingDoc = querySnapshot.documents.first()
-                if (existingDoc.id != userId) {
-                    Log.w(TAG, "Username '$trimmedUsername' ya está en uso por otro usuario: ${existingDoc.id}")
-                    onError(Exception("El nombre de usuario ya está en uso"))
-                    return@addOnSuccessListener
-                }
-            }
-            val userData = hashMapOf<String, Any>(
-                "email" to trimmedEmail,
-                "username" to trimmedUsername,
-                "createdAt" to FieldValue.serverTimestamp(),
-                "lastLogin" to FieldValue.serverTimestamp()
-            )
-
-            Firebase.firestore.collection("users").document(userId)
-                .set(userData)
-                .addOnSuccessListener {
-                    Log.d(TAG, "✅ Perfil guardado exitosamente en Firestore para: $userId")
-                    Log.d(TAG, "  - Email: $trimmedEmail")
-                    Log.d(TAG, "  - Username: $trimmedUsername")
-                    onSuccess()
-                }
-                .addOnFailureListener { e ->
-                    Log.e(TAG, "❌ Error guardando perfil en Firestore para $userId: ${e.message}", e)
-
-                    if (e.message?.contains("PERMISSION_DENIED") == true || 
-                        e.message?.contains("Missing or insufficient permissions") == true) {
-                        onError(Exception("Error de permisos: Configura las reglas de Firestore en Firebase Console para permitir escritura en la colección 'users'"))
-                    } else {
-                        onError(e)
-                    }
-                }
-        }
-        .addOnFailureListener { e ->
-            Log.e(TAG, "Error en verificación final de username: ${e.message}", e)
-
-            if (e.message?.contains("PERMISSION_DENIED") == true || 
-                e.message?.contains("Missing or insufficient permissions") == true) {
-                onError(Exception("Error de permisos en Firestore. Configura las reglas de seguridad en Firebase Console."))
-            } else {
-                onError(e)
             }
         }
 }

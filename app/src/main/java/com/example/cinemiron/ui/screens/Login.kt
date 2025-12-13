@@ -240,18 +240,39 @@ fun findEmailByUsername(
     username: String,
     onResult: (String?) -> Unit
 ) {
+    // Buscar primero en la nueva estructura (basicInfo.username)
     Firebase.firestore.collection("users")
-        .whereEqualTo("username", username)
+        .whereEqualTo("basicInfo.username", username)
         .limit(1)
         .get()
         .addOnSuccessListener { querySnapshot ->
             if (!querySnapshot.isEmpty) {
-                val email = querySnapshot.documents.first().getString("email")
+                val doc = querySnapshot.documents.first()
+                val data = doc.data
+                val email = (data?.get("basicInfo") as? Map<*, *>)?.get("email") as? String
+                    ?: data?.get("email") as? String
+                    ?: doc.getString("email")
                 Log.d(TAG, "Email encontrado para username $username: $email")
                 onResult(email)
             } else {
-                Log.w(TAG, "No se encontró usuario con username: $username")
-                onResult(null)
+                Firebase.firestore.collection("users")
+                    .whereEqualTo("username", username)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { oldQuerySnapshot ->
+                        if (!oldQuerySnapshot.isEmpty) {
+                            val email = oldQuerySnapshot.documents.first().getString("email")
+                            Log.d(TAG, "Email encontrado para username $username (estructura antigua): $email")
+                            onResult(email)
+                        } else {
+                            Log.w(TAG, "No se encontró usuario con username: $username")
+                            onResult(null)
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e(TAG, "Error buscando username (estructura antigua): ${e.message}", e)
+                        onResult(null)
+                    }
             }
         }
         .addOnFailureListener { e ->
