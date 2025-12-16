@@ -240,44 +240,91 @@ fun findEmailByUsername(
     username: String,
     onResult: (String?) -> Unit
 ) {
+    Log.d(TAG, "Buscando email para username: $username")
+    
     // Buscar primero en la nueva estructura (basicInfo.username)
     Firebase.firestore.collection("users")
         .whereEqualTo("basicInfo.username", username)
         .limit(1)
         .get()
         .addOnSuccessListener { querySnapshot ->
+            Log.d(TAG, "Resultado búsqueda nueva estructura: ${querySnapshot.isEmpty}")
             if (!querySnapshot.isEmpty) {
                 val doc = querySnapshot.documents.first()
                 val data = doc.data
-                val email = (data?.get("basicInfo") as? Map<*, *>)?.get("email") as? String
-                    ?: data?.get("email") as? String
-                    ?: doc.getString("email")
-                Log.d(TAG, "Email encontrado para username $username: $email")
-                onResult(email)
+                Log.d(TAG, "Datos del documento encontrado: $data")
+                
+                // Intentar obtener email de basicInfo.email
+                val basicInfo = data?.get("basicInfo") as? Map<*, *>
+                val email = basicInfo?.get("email") as? String
+                
+                if (email != null && email.isNotEmpty()) {
+                    Log.d(TAG, "✅ Email encontrado en basicInfo.email para username $username: $email")
+                    onResult(email)
+                } else {
+                    // Fallback: buscar email en la raíz del documento (estructura antigua)
+                    val emailFallback = data?.get("email") as? String ?: doc.getString("email")
+                    if (emailFallback != null && emailFallback.isNotEmpty()) {
+                        Log.d(TAG, "✅ Email encontrado en raíz del documento para username $username: $emailFallback")
+                        onResult(emailFallback)
+                    } else {
+                        Log.e(TAG, "❌ No se pudo encontrar email para username $username")
+                        onResult(null)
+                    }
+                }
             } else {
+                // Si no se encuentra en nueva estructura, buscar en estructura antigua
+                Log.d(TAG, "No encontrado en nueva estructura, buscando en estructura antigua...")
                 Firebase.firestore.collection("users")
                     .whereEqualTo("username", username)
                     .limit(1)
                     .get()
                     .addOnSuccessListener { oldQuerySnapshot ->
                         if (!oldQuerySnapshot.isEmpty) {
-                            val email = oldQuerySnapshot.documents.first().getString("email")
-                            Log.d(TAG, "Email encontrado para username $username (estructura antigua): $email")
-                            onResult(email)
+                            val doc = oldQuerySnapshot.documents.first()
+                            val email = doc.getString("email")
+                            if (email != null && email.isNotEmpty()) {
+                                Log.d(TAG, "✅ Email encontrado para username $username (estructura antigua): $email")
+                                onResult(email)
+                            } else {
+                                Log.e(TAG, "❌ Email vacío o null en estructura antigua para username: $username")
+                                onResult(null)
+                            }
                         } else {
-                            Log.w(TAG, "No se encontró usuario con username: $username")
+                            Log.w(TAG, "❌ No se encontró usuario con username: $username")
                             onResult(null)
                         }
                     }
                     .addOnFailureListener { e ->
-                        Log.e(TAG, "Error buscando username (estructura antigua): ${e.message}", e)
+                        Log.e(TAG, "❌ Error buscando username (estructura antigua): ${e.message}", e)
                         onResult(null)
                     }
             }
         }
         .addOnFailureListener { e ->
-            Log.e(TAG, "Error buscando username: ${e.message}", e)
-            onResult(null)
+            Log.e(TAG, "❌ Error buscando username en nueva estructura: ${e.message}", e)
+            // Intentar estructura antigua como fallback
+            Firebase.firestore.collection("users")
+                .whereEqualTo("username", username)
+                .limit(1)
+                .get()
+                .addOnSuccessListener { oldQuerySnapshot ->
+                    if (!oldQuerySnapshot.isEmpty) {
+                        val email = oldQuerySnapshot.documents.first().getString("email")
+                        if (email != null && email.isNotEmpty()) {
+                            Log.d(TAG, "✅ Email encontrado (fallback estructura antigua): $email")
+                            onResult(email)
+                        } else {
+                            onResult(null)
+                        }
+                    } else {
+                        onResult(null)
+                    }
+                }
+                .addOnFailureListener { e2 ->
+                    Log.e(TAG, "❌ Error en fallback: ${e2.message}", e2)
+                    onResult(null)
+                }
         }
 }
 
@@ -288,22 +335,53 @@ fun loginWithEmail(
     onSuccess: () -> Unit,
     onError: (String) -> Unit
 ) {
-    auth.signInWithEmailAndPassword(email, password)
+    if (email.isEmpty() || email.isBlank()) {
+        Log.e(TAG, "❌ Email vacío o inválido")
+        onError("Email inválido")
+        return
+    }
+    
+    if (password.isEmpty() || password.isBlank()) {
+        Log.e(TAG, "❌ Contraseña vacía")
+        onError("Contraseña inválida")
+        return
+    }
+    
+    Log.d(TAG, "Intentando login con email: $email")
+    
+    auth.signInWithEmailAndPassword(email.trim(), password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val user = auth.currentUser
                 if (user != null) {
+                    Log.d(TAG, "✅ Login exitoso para: ${user.email}, UID: ${user.uid}")
                     updateLastLogin(user.uid) {
-                        Log.d(TAG, "Login exitoso para: ${user.email}")
                         onSuccess()
                     }
                 } else {
+                    Log.e(TAG, "❌ Usuario es null después de login exitoso")
                     onError("Error al obtener información del usuario")
                 }
             } else {
-                val error = task.exception?.message ?: "Error desconocido al iniciar sesión"
-                Log.e(TAG, "Error en login: $error", task.exception)
-                onError(error)
+                val exception = task.exception
+                val errorMessage = exception?.message ?: "Error desconocido al iniciar sesión"
+                Log.e(TAG, "❌ Error en login con email $email: $errorMessage", exception)
+                
+                // Mensajes de error más amigables
+                val friendlyError = when {
+                    errorMessage.contains("invalid-email", ignoreCase = true) -> 
+                        "El formato del email no es válido"
+                    errorMessage.contains("user-disabled", ignoreCase = true) -> 
+                        "Esta cuenta ha sido deshabilitada"
+                    errorMessage.contains("user-not-found", ignoreCase = true) -> 
+                        "No existe una cuenta con este email"
+                    errorMessage.contains("wrong-password", ignoreCase = true) -> 
+                        "La contraseña es incorrecta"
+                    errorMessage.contains("invalid-credential", ignoreCase = true) -> 
+                        "Email o contraseña incorrectos"
+                    else -> "Error al iniciar sesión: $errorMessage"
+                }
+                onError(friendlyError)
             }
         }
 }
