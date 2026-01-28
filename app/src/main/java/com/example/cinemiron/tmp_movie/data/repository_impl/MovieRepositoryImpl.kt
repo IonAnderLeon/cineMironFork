@@ -1,5 +1,6 @@
 package com.example.cinemiron.tmp_movie.data.repository_impl
 
+import android.util.Log
 import com.example.cinemiron.tmp_movie.data.remote.api.MovieApiService
 import com.example.cinemiron.tmp_common.data.ApiMapper
 import com.example.cinemiron.tmp_movie.data.remote.models.MovieDto
@@ -52,6 +53,22 @@ class MovieRepositoryImpl(
         val movieDetailDto = movieApiService.fetchMovieDetail(movieId)
         val movieDetail = movieDetailMapper.mapToDomain(movieDetailDto)
         emit(Response.Success(movieDetail))
+    }.catch { e ->
+        emit(Response.Error(e))
+    }
+
+    override fun fetchMovieTrailer(movieId: Int): Flow<Response<String>> = flow {
+        emit(Response.Loading())
+
+        val response = movieApiService.fetchMovieVideos(movieId)
+
+        val trailerKey = response.results
+            .firstOrNull { it.site == "YouTube" && it.type == "Trailer" }
+            ?.key
+            ?: throw Exception("Trailer no encontrado")
+
+        emit(Response.Success(trailerKey))
+
     }.catch { e ->
         emit(Response.Error(e))
     }

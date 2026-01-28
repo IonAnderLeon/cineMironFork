@@ -1,5 +1,6 @@
 package com.example.cinemiron.tmp_ui.filminfo
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cinemiron.tmp_movie.domain.models.MovieDetail
@@ -37,6 +38,18 @@ class FilmInfoViewModel @Inject constructor(
             }
         }
     }
+
+    fun fetchTrailer(movieId: Int, onResult: (String) -> Unit) {
+        viewModelScope.launch {
+            repository.fetchMovieTrailer(movieId).collectAndHandle(
+                onError = { },
+                onLoading = { }
+            ) { trailerKey ->
+                onResult(trailerKey)
+            }
+        }
+    }
+
 }
 
 data class FilmInfoState(

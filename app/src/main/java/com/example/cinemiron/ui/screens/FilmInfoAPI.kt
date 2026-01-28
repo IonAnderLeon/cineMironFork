@@ -1,5 +1,8 @@
 package com.example.cinemiron.ui.screens
 
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,6 +44,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -223,7 +227,10 @@ fun TopFilmInfoAPI(movieDetail: com.example.cinemiron.tmp_movie.domain.models.Mo
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(vertical = 8.dp)
                 ) {
-                    TrailerButtonAPI()
+                    TrailerButtonAPI(
+                        movieId = movieDetail.id,
+                        viewModel = hiltViewModel()
+                    )
                     Text(
                         text = runtimeText,
                         modifier = Modifier.padding(start = 8.dp),
@@ -245,24 +252,38 @@ fun TopFilmInfoAPI(movieDetail: com.example.cinemiron.tmp_movie.domain.models.Mo
 }
 
 @Composable
-fun TrailerButtonAPI() {
+fun TrailerButtonAPI(
+    movieId: Int,
+    viewModel: FilmInfoViewModel
+) {
+    val context = LocalContext.current
+
     Button(
-        onClick = { /* TODO: Implementar acción del trailer */ },
-        Modifier
+        onClick = {
+            Log.d("TRAILER", "Solicitando trailer de $movieId")
+
+            viewModel.fetchTrailer(movieId) { key ->
+                Log.d("TRAILER", "Trailer key = $key")
+
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://www.youtube.com/watch?v=$key")
+                )
+                context.startActivity(intent)
+            }
+        },
+        modifier = Modifier
             .height(24.dp)
-            .width(104.dp)
-            .padding(horizontal = 4.dp),
+            .width(104.dp),
         contentPadding = PaddingValues(2.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                Icons.Default.PlayArrow,
-                contentDescription = null
-            )
+            Icon(Icons.Default.PlayArrow, contentDescription = null)
             Text("TRAILER")
         }
     }
 }
+
 
 @Composable
 fun DescriptionRowAPI(description: String) {

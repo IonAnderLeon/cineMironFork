@@ -10,4 +10,5 @@ interface MovieRepository {
     fun fetchTrendingMovie(): Flow<Response<List<Movie>>>
     fun fetchUpcomingMovie(): Flow<Response<List<Movie>>>
     fun fetchMovieDetail(movieId: Int): Flow<Response<MovieDetail>>
+    fun fetchMovieTrailer(movieId: Int): Flow<Response<String>>
 }
