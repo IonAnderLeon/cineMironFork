@@ -1,7 +1,9 @@
-package com.example.cinemiron.ui.movie.detail
+package com.example.cinemiron.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,11 +22,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -53,10 +57,12 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.cinemiron.core.utils.K
 import com.example.cinemiron.domain.models.MovieDetail
+import com.example.cinemiron.ui.movie.detail.FilmInfoState
+import com.example.cinemiron.ui.movie.detail.MovieDetailViewModel
 import com.example.cinemiron.ui.theme.Primary
 
 @Composable
-fun MovieDetailScreen(navController: NavController, modifier: Modifier = Modifier, movieId: Int? = null) {
+fun FilmInfoAPI(navController: NavController, modifier: Modifier = Modifier, movieId: Int? = null) {
     val viewModel: MovieDetailViewModel = hiltViewModel()
     val filmInfoState by viewModel.filmInfoState.collectAsStateWithLifecycle()
 
@@ -157,7 +163,7 @@ fun TopFilmColumnAPI(
                 )
             }
 
-            TopMovieDetailScreen(movieDetail)
+            TopFilmInfoAPI(movieDetail)
         }
 
         LazyColumn(
@@ -195,7 +201,7 @@ fun TopFilmColumnAPI(
 }
 
 @Composable
-fun TopMovieDetailScreen(movieDetail: MovieDetail) {
+fun TopFilmInfoAPI(movieDetail: MovieDetail) {
     val imageUrl = "${K.BASE_IMAGE_URL}${movieDetail.poster_path}"
     val genresText = movieDetail.genres.joinToString(", ") { it.name }
     val year = movieDetail.release_date.take(4)

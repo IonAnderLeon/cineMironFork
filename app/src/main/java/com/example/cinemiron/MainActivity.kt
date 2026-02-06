@@ -40,9 +40,9 @@ import com.example.cinemiron.ui.auth.register.RegisterScreen
 import com.example.cinemiron.ui.auth.resetpassword.ResetPasswordScreen
 import com.example.cinemiron.ui.home.HomeScreen
 import com.example.cinemiron.ui.search.SearchScreen
-import com.example.cinemiron.ui.movie.detail.MovieDetailScreen
 import com.example.cinemiron.ui.profile.ProfileScreen
 import com.example.cinemiron.ui.review.ReviewScreen
+import com.example.cinemiron.ui.screens.FilmInfoAPI
 import com.example.cinemiron.ui.theme.CineMironTheme
 import com.example.cinemiron.ui.theme.ColorSchemeOption
 import com.google.firebase.Firebase
@@ -192,7 +192,7 @@ class MainActivity : ComponentActivity() {
                             )
                         ) { backStackEntry ->
                             val movieId = backStackEntry.arguments?.getInt("movieId")
-                            MovieDetailScreen(
+                            FilmInfoAPI(
                                 navController = navController,
                                 modifier = Modifier.padding(innerPadding),
                                 movieId = movieId
