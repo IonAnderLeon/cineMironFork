@@ -24,8 +24,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.cinemiron.tmp_movie.domain.models.Movie
-import com.example.cinemiron.tmp_utils.K
+import com.example.cinemiron.core.utils.K
+import com.example.cinemiron.domain.models.Movie
 import kotlin.text.take
 
 @Composable
